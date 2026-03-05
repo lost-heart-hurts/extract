@@ -1,4 +1,4 @@
-const { getTasks } = require("../../utils/http");
+const { getTasks, clearAllTasks } = require("../../utils/http");
 
 Page({
   data: {
@@ -108,6 +108,34 @@ Page({
       failed: "#f5222d"
     };
     return colorMap[status] || "#999";
+  },
+
+  onClearHistory() {
+    wx.showModal({
+      title: "确认清除",
+      content: "确定要清除所有历史记录吗？此操作不可恢复。",
+      confirmText: "确认清除",
+      cancelText: "取消",
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            const result = await clearAllTasks();
+            wx.showToast({
+              title: `成功清除 ${result.deletedCount || 0} 条记录`,
+              icon: "success"
+            });
+            // 刷新页面
+            this.loadTasks();
+          } catch (error) {
+            console.error("清除历史记录失败:", error);
+            wx.showToast({
+              title: error.message || "清除失败",
+              icon: "none"
+            });
+          }
+        }
+      }
+    });
   },
 
   goHome() {

@@ -1,4 +1,4 @@
-const { wechatLogin } = require("./utils/http");
+const { wechatLogin, deleteTask } = require("./utils/http");
 
 App({
   onLaunch() {
@@ -75,5 +75,23 @@ App({
   clearCurrentTaskId() {
     this.globalData.currentTaskId = null;
     wx.removeStorageSync("currentTaskId");
+  },
+
+  // 删除未完成的任务（通用方法）
+  async deleteIncompleteTask() {
+    const taskId = this.getCurrentTaskId();
+    if (!taskId) {
+      return false;
+    }
+
+    try {
+      await deleteTask(taskId);
+      console.log("已删除未完成的任务，taskId:", taskId);
+      this.clearCurrentTaskId();
+      return true;
+    } catch (error) {
+      console.error("删除任务失败:", error);
+      return false;
+    }
   }
 })

@@ -32,14 +32,25 @@ Page({
 
   onSubjectInput(e) {
     this.setData({ subject: e.detail.value });
+    this.updateFileNamePreview();
   },
 
   onMonthInput(e) {
     this.setData({ month: e.detail.value });
+    this.updateFileNamePreview();
   },
 
   onVoucherNoInput(e) {
     this.setData({ voucherNo: e.detail.value });
+    this.updateFileNamePreview();
+  },
+
+  updateFileNamePreview() {
+    const { subject, month, voucherNo } = this.data;
+    if (subject && month && voucherNo) {
+      const fileNamePreview = `${subject}-${month}-${voucherNo}.pdf`;
+      this.setData({ fileNamePreview });
+    }
   },
 
   async onConfirm() {
@@ -84,9 +95,25 @@ Page({
         content: error.message || "PDF生成失败，是否重试？",
         confirmText: "重试",
         cancelText: "取消",
-        success: (res) => {
+        success: async (res) => {
           if (res.confirm) {
             this.onConfirm();
+          } else {
+            // 用户取消，删除当前任务
+            const app = getApp();
+            const deleted = await app.deleteIncompleteTask(taskId);
+            
+            if (deleted) {
+              // 返回首页
+              wx.reLaunch({
+                url: "/pages/home/home"
+              });
+            } else {
+              wx.showToast({
+                title: "删除失败，请重试",
+                icon: "none"
+              });
+            }
           }
         }
       });
@@ -106,10 +133,32 @@ Page({
     }
   },
 
-  onCancel() {
-    // 设置标记，告诉 index 页面需要重新创建任务（因为从confirm返回后task状态已改变）
-    wx.setStorageSync("recreateTask", true);
-    wx.navigateBack();
+  async onCancel() {
+    const { taskId } = this.data;
+    
+    wx.showModal({
+      title: "确认取消",
+      content: "取消后将删除当前任务，是否继续？",
+      confirmText: "确认取消",
+      cancelText: "继续编辑",
+      success: async (res) => {
+        if (res.confirm) {
+          const app = getApp();
+          const deleted = await app.deleteIncompleteTask(taskId);
+          
+          if (deleted) {
+            // 设置标记，告诉 index 页面需要重新创建任务
+            wx.setStorageSync("recreateTask", true);
+            wx.navigateBack();
+          } else {
+            wx.showToast({
+              title: "删除失败，请重试",
+              icon: "none"
+            });
+          }
+        }
+      }
+    });
   },
 
   goHome() {

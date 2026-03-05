@@ -98,6 +98,20 @@ function getTasks() {
   });
 }
 
+function deleteTask(taskId) {
+  return request({
+    url: `/voucher-tasks/${taskId}`,
+    method: "DELETE",
+  });
+}
+
+function clearAllTasks() {
+  return request({
+    url: "/voucher-tasks",
+    method: "DELETE",
+  });
+}
+
 // 微信登录
 function wechatLogin(code) {
   return request({
@@ -117,5 +131,7 @@ module.exports = {
   confirmGenerate,
   getTask,
   getTasks,
+  deleteTask,
+  clearAllTasks,
   wechatLogin
 };

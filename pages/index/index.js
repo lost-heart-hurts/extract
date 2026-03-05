@@ -238,20 +238,28 @@ Page({
       console.error("处理失败:", error);
       this.setData({ loading: false });
       wx.showModal({
-        title: "识别失败",
-        content: error.message || "OCR识别失败，是否重试？",
+        title: "处理失败",
+        content: error.message || "处理失败，是否重试？",
         confirmText: "重试",
         cancelText: "取消",
-        success: (res) => {
+        success: async (res) => {
           if (res.confirm) {
             this.startProcess();
+          } else {
+            // 用户取消，删除当前任务
+            const app = getApp();
+            await app.deleteIncompleteTask();
           }
         }
       });
     }
   },
 
-  goHome() {
+  async goHome() {
+    // 如果有未完成的任务，先删除
+    const app = getApp();
+    await app.deleteIncompleteTask();
+    
     wx.reLaunch({
       url: "/pages/home/home"
     });

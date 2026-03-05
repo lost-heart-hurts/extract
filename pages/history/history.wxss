@@ -9,13 +9,26 @@
 
 .header {
   margin-bottom: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .title {
-  display: block;
   font-size: 36rpx;
   font-weight: bold;
   color: #333;
+}
+
+.clear-button {
+  background-color: #fff;
+  color: #ff4757;
+  border: 1rpx solid #ff4757;
+  font-size: 24rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0 20rpx;
+  border-radius: 8rpx;
 }
 
 .task-list {

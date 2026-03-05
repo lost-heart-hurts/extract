@@ -1,6 +1,9 @@
 <view class="container">
   <view class="header">
     <text class="title">凭证历史</text>
+    <button class="clear-button" bindtap="onClearHistory">
+      清除历史
+    </button>
   </view>
 
   <view class="task-list" wx:if="{{tasks.length > 0}}">
