@@ -7,8 +7,26 @@ Page({
     refreshing: false
   },
 
-  onLoad() {
-    this.loadTasks();
+  async onLoad() {
+    // 检查是否已登录
+    const app = getApp();
+    if (!app.isLoggedIn()) {
+      wx.showToast({
+        title: "请先登录",
+        icon: "none"
+      });
+      this.setData({ loading: false });
+      return;
+    }
+    
+    this.setData({ loading: true });
+    try {
+      const result = await getTasks();
+      this.setData({ tasks: result.items || result || [], loading: false });
+    } catch (error) {
+      console.error("获取历史记录失败:", error);
+      this.setData({ loading: false });
+    }
   },
 
   onShow() {
@@ -20,6 +38,17 @@ Page({
   },
 
   async loadTasks(isRefresh = false) {
+    // 检查是否已登录
+    const app = getApp();
+    if (!app.isLoggedIn()) {
+      wx.showToast({
+        title: "请先登录",
+        icon: "none"
+      });
+      this.setData({ loading: false, refreshing: false });
+      return;
+    }
+    
     if (isRefresh) {
       this.setData({ refreshing: true });
     } else {
@@ -27,8 +56,7 @@ Page({
     }
 
     try {
-      const userId = wx.getStorageSync("userId");
-      const result = await getTasks(userId);
+      const result = await getTasks();
       this.setData({
         tasks: result.items || result || [],
         loading: false,

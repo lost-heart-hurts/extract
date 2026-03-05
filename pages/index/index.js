@@ -11,6 +11,16 @@ Page({
   },
 
   async onShow() {
+    // 检查是否已登录
+    const app = getApp();
+    if (!app.isLoggedIn()) {
+      wx.showToast({
+        title: "请先登录",
+        icon: "none"
+      });
+      return;
+    }
+    
     const userId = wx.getStorageSync("userId");
     if (userId) {
       this.setData({ userId });
@@ -47,7 +57,7 @@ Page({
   async createNewTask() {
     try {
       const app = getApp();
-      const task = await createTask(this.data.userId);
+      const task = await createTask();
       if (task && task.taskId) {
         app.setCurrentTaskId(task.taskId);
         this.setData({ taskId: task.taskId });
@@ -172,13 +182,22 @@ Page({
       return;
     }
 
+    // 检查是否已登录
+    const app = getApp();
+    if (!app.isLoggedIn()) {
+      wx.showToast({
+        title: "请先登录",
+        icon: "none"
+      });
+      return;
+    }
+
     this.setData({ loading: true, loadingText: "正在准备任务..." });
 
     try {
-      const app = getApp();
       // 每次开始处理都创建新任务，确保任务状态为 draft
       this.setData({ loadingText: "正在创建任务..." });
-      const task = await createTask(this.data.userId);
+      const task = await createTask();
       const taskId = task.taskId;
       app.setCurrentTaskId(taskId);
       this.setData({ taskId: taskId });
@@ -189,8 +208,7 @@ Page({
       await uploadPage({
         taskId: taskId,
         filePath: this.data.firstImage,
-        pageIndex: 0,
-        userId: this.data.userId
+        pageIndex: 0
       });
 
       // 再上传其他图片（pageIndex从1开始）
@@ -198,18 +216,17 @@ Page({
         await uploadPage({
           taskId: taskId,
           filePath: this.data.images[i],
-          pageIndex: i + 1,
-          userId: this.data.userId
+          pageIndex: i + 1
         });
       }
 
       this.setData({ loadingText: "正在完成上传..." });
 
-      await finishUpload(taskId, this.data.userId);
+      await finishUpload(taskId);
 
       this.setData({ loadingText: "正在识别..." });
 
-      const recognized = await this.retryWithBackoff(() => recognize(taskId, this.data.userId), 3);
+      const recognized = await this.retryWithBackoff(() => recognize(taskId), 3);
 
       this.setData({ loading: false });
 

@@ -1,27 +1,58 @@
+const { wechatLogin } = require("./utils/http");
+
 App({
   onLaunch() {
     const logs = wx.getStorageSync("logs") || []
     logs.unshift(Date.now())
     wx.setStorageSync("logs", logs)
 
-    let userId = wx.getStorageSync("userId");
-    if (!userId) {
-      userId = "wx_user_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-      wx.setStorageSync("userId", userId);
-    }
-
-    // 注意：任务不再在 onLaunch 中创建，而是在 index 页面的 onShow 中创建
-    // 这样可以确保每次用户进入首页都能获得一个新的任务
-    // this.createInitialTask(userId);
-    
     // 设置标记，表示这是新启动的应用，index页面需要重置状态
     wx.setStorageSync("shouldResetIndex", true);
 
-    wx.login({
-      success: res => {
-        console.log("微信登录成功，code:", res.code);
+    // 微信登录并获取 access token
+    this.doWechatLogin();
+  },
+
+  async doWechatLogin() {
+    try {
+      const res = await new Promise((resolve, reject) => {
+        wx.login({
+          success: resolve,
+          fail: reject
+        });
+      });
+
+      console.log("微信登录成功，code:", res.code);
+
+      // 调用后端登录接口获取 access token
+      const loginResult = await wechatLogin(res.code);
+
+      if (loginResult && loginResult.accessToken) {
+        // 存储 access token
+        wx.setStorageSync("accessToken", loginResult.accessToken);
+        wx.setStorageSync("userId", loginResult.userId);
+        wx.setStorageSync("loginSuccess", true);
+        console.log("登录成功，userId:", loginResult.userId);
+        return true;
+      } else {
+        throw new Error("登录失败：未获取到 accessToken");
       }
-    })
+    } catch (error) {
+      console.error("登录失败:", error);
+      wx.setStorageSync("loginSuccess", false);
+      wx.showToast({
+        title: "登录失败，请重新打开小程序",
+        icon: "none",
+        duration: 3000
+      });
+      return false;
+    }
+  },
+
+  // 检查是否已登录
+  isLoggedIn() {
+    return wx.getStorageSync("loginSuccess") === true && 
+           wx.getStorageSync("accessToken");
   },
 
   globalData: {

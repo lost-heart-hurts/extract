@@ -8,6 +8,16 @@ Page({
   },
 
   onLoad(options) {
+    // 检查是否已登录
+    const app = getApp();
+    if (!app.isLoggedIn()) {
+      wx.showToast({
+        title: "请先登录",
+        icon: "none"
+      });
+      return;
+    }
+    
     const { taskId } = options;
     if (!taskId) {
       wx.showToast({

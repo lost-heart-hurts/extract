@@ -19,10 +19,8 @@ Page({
     const confidence = options.confidence;
     const fileNamePreview = options.fileNamePreview ? decodeURIComponent(options.fileNamePreview) : "";
     const confidenceValue = parseFloat(confidence || 0);
-    const userId = wx.getStorageSync("userId");
     this.setData({
       taskId,
-      userId,
       subject,
       month,
       voucherNo,
@@ -58,7 +56,7 @@ Page({
     this.setData({ loading: true });
 
     try {
-      const result = await this.retryWithBackoff(() => confirmGenerate(taskId, { subject, month, voucherNo, fileName: fileNamePreview }, this.data.userId), 3);
+      const result = await this.retryWithBackoff(() => confirmGenerate(taskId, { subject, month, voucherNo, fileName: fileNamePreview }), 3);
 
       if (result.status === "pdf_generated" && result.pdfUrl) {
         // 保留taskId以便后续使用
