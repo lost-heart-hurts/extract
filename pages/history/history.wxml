@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="header">
+    <text class="title">凭证历史</text>
+  </view>
+
+  <view class="task-list" wx:if="{{tasks.length > 0}}">
+    <view 
+      class="task-item" 
+      wx:for="{{tasks}}" 
+      wx:key="taskId" 
+      bindtap="onTaskTap"
+      data-task="{{item}}"
+    >
+      <view class="task-main">
+        <view class="task-info">
+          <text class="task-subject">{{item.subject || "未命名"}}</text>
+          <text class="task-time">{{item.createdAt || ""}}</text>
+        </view>
+        <view class="task-status" style="background-color: {{getStatusColor(item.status)}}20; color: {{getStatusColor(item.status)}}">
+          {{getStatusText(item.status)}}
+        </view>
+      </view>
+      
+      <view class="task-details" wx:if="{{item.month || item.voucherNo}}">
+        <text class="detail-item" wx:if="{{item.month}}">{{item.month}}</text>
+        <text class="detail-item" wx:if="{{item.voucherNo}}">{{item.voucherNo}}</text>
+      </view>
+
+      <view class="task-file" wx:if="{{item.fileName}}">
+        <text class="file-name">{{item.fileName}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <text class="empty-text">暂无凭证记录</text>
+    <text class="empty-hint">开始创建您的第一个凭证吧</text>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

@@ -1,0 +1,26 @@
+<view class="container">
+  <view class="button primary-button" bindtap="takePhoto">
+    拍照
+  </view>
+  <view class="button secondary-button" bindtap="chooseImages">
+    选择本地图片
+  </view>
+  
+  <view class="image-list" wx:if="{{images.length > 0}}">
+    <view class="image-item" wx:for="{{images}}" wx:key="{{index}}">
+      <image src="{{item}}" mode="aspectFill"></image>
+      <view class="image-index">{{index + 1}}</view>
+      <view class="delete-icon" bindtap="deleteImage" data-index="{{index}}">
+        ×
+      </view>
+    </view>
+  </view>
+  
+  <view class="button primary-button" bindtap="startProcess" wx:if="{{images.length > 0}}">
+    开始处理
+  </view>
+  
+  <view class="loading" wx:if="{{loading}}">
+    <text>{{loadingText}}</text>
+  </view>
+</view>

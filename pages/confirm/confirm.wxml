@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="header">
+    <text class="title">确认凭证信息</text>
+    <text class="subtitle" wx:if="{{confidence > 0}}">识别置信度: {{confidencePercent}}%</text>
+  </view>
+
+  <view class="form-section">
+    <view class="form-item">
+      <text class="label">科目名称</text>
+      <input 
+        class="input" 
+        value="{{subject}}" 
+        placeholder="请输入科目名称" 
+        bindinput="onSubjectInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">月份</text>
+      <input 
+        class="input" 
+        value="{{month}}" 
+        placeholder="例如: 2022-07" 
+        bindinput="onMonthInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">凭证号</text>
+      <input 
+        class="input" 
+        value="{{voucherNo}}" 
+        placeholder="例如: 记470" 
+        bindinput="onVoucherNoInput"
+      />
+    </view>
+  </view>
+
+  <view class="preview-section" wx:if="{{fileNamePreview}}">
+    <text class="preview-label">文件名预览:</text>
+    <text class="preview-text">{{fileNamePreview}}</text>
+  </view>
+
+  <view class="button-group">
+    <button 
+      class="button secondary-button" 
+      bindtap="onCancel"
+      disabled="{{loading}}"
+    >
+      取消
+    </button>
+    <button 
+      class="button primary-button" 
+      bindtap="onConfirm"
+      loading="{{loading}}"
+      disabled="{{loading}}"
+    >
+      生成
+    </button>
+  </view>
+</view>
