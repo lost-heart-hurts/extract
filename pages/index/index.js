@@ -189,7 +189,8 @@ Page({
       await uploadPage({
         taskId: taskId,
         filePath: this.data.firstImage,
-        pageIndex: 0
+        pageIndex: 0,
+        userId: this.data.userId
       });
 
       // 再上传其他图片（pageIndex从1开始）
@@ -197,17 +198,18 @@ Page({
         await uploadPage({
           taskId: taskId,
           filePath: this.data.images[i],
-          pageIndex: i + 1
+          pageIndex: i + 1,
+          userId: this.data.userId
         });
       }
 
       this.setData({ loadingText: "正在完成上传..." });
 
-      await finishUpload(taskId);
+      await finishUpload(taskId, this.data.userId);
 
       this.setData({ loadingText: "正在识别..." });
 
-      const recognized = await this.retryWithBackoff(() => recognize(taskId), 3);
+      const recognized = await this.retryWithBackoff(() => recognize(taskId, this.data.userId), 3);
 
       this.setData({ loading: false });
 

@@ -31,7 +31,13 @@ Page({
     this.setData({ loading: true });
 
     try {
-      const task = await getTask(this.data.taskId);
+      const userId = wx.getStorageSync("userId");
+      if (!userId) {
+        this.setData({ loading: false });
+        return;
+      }
+      
+      const task = await getTask(this.data.taskId, userId);
       const confidencePercent = task.confidence ? (task.confidence * 100).toFixed(0) : "0";
       this.setData({
         task: task,

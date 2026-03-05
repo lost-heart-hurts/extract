@@ -27,7 +27,8 @@ Page({
     }
 
     try {
-      const result = await getTasks();
+      const userId = wx.getStorageSync("userId");
+      const result = await getTasks(userId);
       this.setData({
         tasks: result.items || result || [],
         loading: false,

@@ -16,10 +16,10 @@ function request({ url, method = "GET", data, header = {} }) {
   });
 }
 
-function uploadPage({ taskId, filePath, pageIndex, name = "file" }) {
+function uploadPage({ taskId, filePath, pageIndex, userId, name = "file" }) {
   return new Promise((resolve, reject) => {
     wx.uploadFile({
-      url: `${BASE_URL}/voucher-tasks/${taskId}/pages`,
+      url: `${BASE_URL}/voucher-tasks/${taskId}/pages?userId=${userId}`,
       filePath,
       name,
       formData: { pageIndex: String(pageIndex) },
@@ -41,38 +41,38 @@ function createTask(userId) {
   });
 }
 
-function finishUpload(taskId) {
+function finishUpload(taskId, userId) {
   return request({
-    url: `/voucher-tasks/${taskId}/finish-upload`,
+    url: `/voucher-tasks/${taskId}/finish-upload?userId=${userId}`,
     method: "POST",
   });
 }
 
-function recognize(taskId) {
+function recognize(taskId, userId) {
   return request({
-    url: `/voucher-tasks/${taskId}/recognize`,
+    url: `/voucher-tasks/${taskId}/recognize?userId=${userId}`,
     method: "POST",
   });
 }
 
-function confirmGenerate(taskId, { subject, month, voucherNo, fileName }) {
+function confirmGenerate(taskId, { subject, month, voucherNo, fileName }, userId) {
   return request({
-    url: `/voucher-tasks/${taskId}/confirm-generate`,
+    url: `/voucher-tasks/${taskId}/confirm-generate?userId=${userId}`,
     method: "POST",
     data: { subject, month, voucherNo, fileName },
   });
 }
 
-function getTask(taskId) {
+function getTask(taskId, userId) {
   return request({
-    url: `/voucher-tasks/${taskId}`,
+    url: `/voucher-tasks/${taskId}?userId=${userId}`,
     method: "GET",
   });
 }
 
-function getTasks() {
+function getTasks(userId) {
   return request({
-    url: "/voucher-tasks",
+    url: `/voucher-tasks?userId=${userId}`,
     method: "GET",
   });
 }
