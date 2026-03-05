@@ -50,6 +50,7 @@ Page({
       const task = await createTask(this.data.userId);
       if (task && task.taskId) {
         app.setCurrentTaskId(task.taskId);
+        this.setData({ taskId: task.taskId });
         console.log("新任务创建成功，taskId:", task.taskId);
       }
     } catch (error) {
@@ -175,14 +176,12 @@ Page({
 
     try {
       const app = getApp();
-      let taskId = app.getCurrentTaskId();
-
-      if (!taskId) {
-        this.setData({ loadingText: "正在创建任务..." });
-        const task = await createTask(this.data.userId);
-        taskId = task.taskId;
-        app.setCurrentTaskId(taskId);
-      }
+      // 每次开始处理都创建新任务，确保任务状态为 draft
+      this.setData({ loadingText: "正在创建任务..." });
+      const task = await createTask(this.data.userId);
+      const taskId = task.taskId;
+      app.setCurrentTaskId(taskId);
+      this.setData({ taskId: taskId });
 
       this.setData({ loadingText: "正在上传图片..." });
 
