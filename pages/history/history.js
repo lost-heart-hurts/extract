@@ -1,4 +1,5 @@
 const { getTasks, clearAllTasks } = require("../../utils/http");
+const { getStatusText, getStatusColor } = require("../../utils/status");
 
 Page({
   data: {
@@ -84,30 +85,6 @@ Page({
     wx.navigateTo({
       url: `/pages/detail/detail?taskId=${task.taskId}`
     });
-  },
-
-  getStatusText(status) {
-    const statusMap = {
-      draft: "草稿",
-      uploaded: "已上传",
-      recognized: "已识别",
-      confirmed: "已确认",
-      pdf_generated: "已完成",
-      failed: "失败"
-    };
-    return statusMap[status] || status;
-  },
-
-  getStatusColor(status) {
-    const colorMap = {
-      draft: "#999",
-      uploaded: "#1890ff",
-      recognized: "#faad14",
-      confirmed: "#722ed1",
-      pdf_generated: "#52c41a",
-      failed: "#f5222d"
-    };
-    return colorMap[status] || "#999";
   },
 
   onClearHistory() {
