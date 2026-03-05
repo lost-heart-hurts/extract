@@ -58,4 +58,11 @@
       生成
     </button>
   </view>
+
+  <!-- 返回首页 - 固定在底部 -->
+  <view class="back-home">
+    <button class="button back-home-button" bindtap="goHome">
+      返回首页
+    </button>
+  </view>
 </view>

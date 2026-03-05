@@ -107,5 +107,11 @@ Page({
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleString("zh-CN");
+  },
+
+  goHome() {
+    wx.reLaunch({
+      url: "/pages/home/home"
+    });
   }
 });

@@ -79,4 +79,11 @@
   <view class="empty-state" wx:if="{{!loading && !task}}">
     <text class="empty-text">任务不存在或已删除</text>
   </view>
+
+  <!-- 返回首页 - 固定在底部 -->
+  <view class="back-home">
+    <button class="button back-home-button" bindtap="goHome">
+      返回首页
+    </button>
+  </view>
 </view>

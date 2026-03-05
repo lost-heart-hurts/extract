@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:8000";
+const { BASE_URL } = require("../../config");
 
 Page({
   data: {
@@ -19,6 +19,15 @@ Page({
     this.openPDF();
   },
 
+  onShareAppMessage() {
+    const { fileName } = this.data;
+    return {
+      title: fileName ? `凭证：${fileName}` : "凭证PDF",
+      path: "/pages/index/index",
+      imageUrl: ""
+    };
+  },
+
   openPDF() {
     wx.showLoading({
       title: "正在加载PDF...",
@@ -28,18 +37,22 @@ Page({
       ? this.data.pdfUrl 
       : `${BASE_URL}${this.data.pdfUrl}`;
 
+    const fileName = this.data.fileName || "凭证.pdf";
+    
     wx.downloadFile({
       url: fullPdfUrl,
+      filePath: wx.env.USER_DATA_PATH + "/" + fileName,
       success: (res) => {
         wx.hideLoading();
         if (res.statusCode === 200) {
           this.setData({
-            tempFilePath: res.tempFilePath
+            tempFilePath: res.filePath || res.tempFilePath
           });
           
           wx.openDocument({
-            filePath: res.tempFilePath,
+            filePath: res.filePath || res.tempFilePath,
             fileType: "pdf",
+            showMenu: true,
             success: function(res) {
               console.log("PDF打开成功");
               wx.showToast({
@@ -69,57 +82,19 @@ Page({
     });
   },
 
-  sharePDF() {
-    if (!this.data.tempFilePath) {
-      wx.showLoading({
-        title: "正在准备PDF...",
-      });
-
-      const fullPdfUrl = this.data.pdfUrl.startsWith("http") 
-        ? this.data.pdfUrl 
-        : `${BASE_URL}${this.data.pdfUrl}`;
-
-      wx.downloadFile({
-        url: fullPdfUrl,
-        success: (res) => {
-          wx.hideLoading();
-          if (res.statusCode === 200) {
-            this.setData({
-              tempFilePath: res.tempFilePath
-            });
-            this.performShare(res.tempFilePath);
-          }
-        },
-        fail: (err) => {
-          wx.hideLoading();
-          wx.showToast({
-            title: "准备PDF失败",
-            icon: "none"
-          });
-        }
-      });
-    } else {
-      this.performShare(this.data.tempFilePath);
-    }
-  },
-
-  performShare(filePath) {
-    wx.shareFileMessage({
-      filePath: filePath,
-      success: function(res) {
-        console.log("分享成功");
-      },
-      fail: function(err) {
-        console.error("分享失败:", err);
-        wx.showToast({
-          title: "分享失败",
-          icon: "none"
-        });
-      }
+  goHome() {
+    // 返回应用首页（home页面）
+    wx.reLaunch({
+      url: "/pages/home/home"
     });
   },
 
-  goHome() {
+  nextProcess() {
+    const app = getApp();
+    app.clearCurrentTaskId();
+    // 设置标记，告诉 index 页面需要重置状态
+    wx.setStorageSync("shouldResetIndex", true);
+    // 使用 reLaunch 关闭所有页面并跳转到 index，确保页面重新创建
     wx.reLaunch({
       url: "/pages/index/index"
     });

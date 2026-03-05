@@ -1,4 +1,4 @@
-const { request, confirmGenerate } = require("../../utils/http");
+const { confirmGenerate } = require("../../utils/http");
 
 Page({
   data: {
@@ -43,7 +43,7 @@ Page({
   },
 
   async onConfirm() {
-    const { taskId, subject, month, voucherNo } = this.data;
+    const { taskId, subject, month, voucherNo, fileNamePreview } = this.data;
 
     if (!subject || !month || !voucherNo) {
       wx.showToast({
@@ -56,7 +56,7 @@ Page({
     this.setData({ loading: true });
 
     try {
-      const result = await this.retryWithBackoff(() => confirmGenerate(taskId, { subject, month, voucherNo }), 3);
+      const result = await this.retryWithBackoff(() => confirmGenerate(taskId, { subject, month, voucherNo, fileName: fileNamePreview }), 3);
 
       if (result.status === "pdf_generated" && result.pdfUrl) {
         // 保留taskId以便后续使用
@@ -66,8 +66,9 @@ Page({
         });
 
         setTimeout(() => {
+          const pdfFileName = result.fileName || fileNamePreview || "凭证.pdf";
           wx.redirectTo({
-            url: `/pages/pdf-preview/pdf-preview?pdfUrl=${encodeURIComponent(result.pdfUrl)}&fileName=${encodeURIComponent(result.fileName || "")}`
+            url: `/pages/pdf-preview/pdf-preview?pdfUrl=${encodeURIComponent(result.pdfUrl)}&fileName=${encodeURIComponent(pdfFileName)}`
           });
         }, 1500);
       } else {
@@ -106,6 +107,14 @@ Page({
   },
 
   onCancel() {
+    // 设置标记，告诉 index 页面需要重新创建任务（因为从confirm返回后task状态已改变）
+    wx.setStorageSync("recreateTask", true);
     wx.navigateBack();
+  },
+
+  goHome() {
+    wx.reLaunch({
+      url: "/pages/home/home"
+    });
   }
 });

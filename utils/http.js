@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:8000";
+const { BASE_URL } = require("../config");
 
 function request({ url, method = "GET", data, header = {} }) {
   return new Promise((resolve, reject) => {
@@ -55,11 +55,11 @@ function recognize(taskId) {
   });
 }
 
-function confirmGenerate(taskId, { subject, month, voucherNo }) {
+function confirmGenerate(taskId, { subject, month, voucherNo, fileName }) {
   return request({
     url: `/voucher-tasks/${taskId}/confirm-generate`,
     method: "POST",
-    data: { subject, month, voucherNo },
+    data: { subject, month, voucherNo, fileName },
   });
 }
 

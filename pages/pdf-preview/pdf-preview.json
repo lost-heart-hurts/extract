@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": "PDF预览"
+  "navigationBarTitleText": "PDF预览",
+  "enableShareAppMessage": true
 }

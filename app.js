@@ -1,5 +1,3 @@
-const { createTask } = require("./utils/http");
-
 App({
   onLaunch() {
     const logs = wx.getStorageSync("logs") || []
@@ -12,8 +10,12 @@ App({
       wx.setStorageSync("userId", userId);
     }
 
-    // 创建任务获取task_id
-    this.createInitialTask(userId);
+    // 注意：任务不再在 onLaunch 中创建，而是在 index 页面的 onShow 中创建
+    // 这样可以确保每次用户进入首页都能获得一个新的任务
+    // this.createInitialTask(userId);
+    
+    // 设置标记，表示这是新启动的应用，index页面需要重置状态
+    wx.setStorageSync("shouldResetIndex", true);
 
     wx.login({
       success: res => {
@@ -22,17 +24,6 @@ App({
     })
   },
 
-  async createInitialTask(userId) {
-    try {
-      const task = await createTask(userId);
-      if (task && task.taskId) {
-        this.setCurrentTaskId(task.taskId);
-        console.log("初始化任务创建成功，taskId:", task.taskId);
-      }
-    } catch (error) {
-      console.error("初始化任务创建失败:", error);
-    }
-  },
   globalData: {
     userInfo: null,
     currentTaskId: null

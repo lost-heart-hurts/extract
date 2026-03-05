@@ -79,5 +79,11 @@ Page({
       failed: "#f5222d"
     };
     return colorMap[status] || "#999";
+  },
+
+  goHome() {
+    wx.reLaunch({
+      url: "/pages/home/home"
+    });
   }
 });

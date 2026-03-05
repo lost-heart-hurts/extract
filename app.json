@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/home/home",
     "pages/index/index",
     "pages/confirm/confirm",
     "pages/pdf-preview/pdf-preview",
