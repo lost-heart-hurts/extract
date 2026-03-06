@@ -58,7 +58,7 @@ Page({
     this.setData({ loading: true });
 
     try {
-      const result = await this.retryWithBackoff(() => confirmGenerate(taskId, { subject, month, voucherNo, fileName: fileNamePreview }, this.data.userId), 3);
+      const result = await this.retryWithBackoff(() => confirmGenerate(taskId, { subject, month, voucherNo }, this.data.userId), 3);
 
       if (result.status === "pdf_generated" && result.pdfUrl) {
         // 保留taskId以便后续使用

@@ -55,11 +55,11 @@ function recognize(taskId, userId) {
   });
 }
 
-function confirmGenerate(taskId, { subject, month, voucherNo, fileName }, userId) {
+function confirmGenerate(taskId, { subject, month, voucherNo }, userId) {
   return request({
     url: `/voucher-tasks/${taskId}/confirm-generate?userId=${userId}`,
     method: "POST",
-    data: { subject, month, voucherNo, fileName },
+    data: { subject, month, voucherNo },
   });
 }
 
@@ -77,6 +77,13 @@ function getTasks(userId) {
   });
 }
 
+function clearAllTasks(userId) {
+  return request({
+    url: `/voucher-tasks?userId=${userId}`,
+    method: "DELETE",
+  });
+}
+
 module.exports = {
   request,
   uploadPage,
@@ -85,5 +92,6 @@ module.exports = {
   recognize,
   confirmGenerate,
   getTask,
-  getTasks
+  getTasks,
+  clearAllTasks
 };
