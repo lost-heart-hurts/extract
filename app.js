@@ -32,6 +32,11 @@ App({
         wx.setStorageSync("accessToken", loginResult.accessToken);
         wx.setStorageSync("userId", loginResult.userId);
         wx.setStorageSync("loginSuccess", true);
+        // 存储 token 过期时间
+        if (loginResult.expiresIn) {
+          const expiresAt = Date.now() + loginResult.expiresIn * 1000;
+          wx.setStorageSync("tokenExpiresAt", expiresAt);
+        }
         console.log("登录成功，userId:", loginResult.userId);
         return true;
       } else {
